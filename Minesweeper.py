@@ -82,27 +82,18 @@ def get_pos():
         return None                                                 #returns coordinates
 
 def dig(mboard, pboard, pos):
-    global playing
-    if mboard[pos[0]-1][pos[1]] == '*':
-        print ()
-        print ("you died")
-        print ()
-        playing = False
-
-    if mboard[pos[0]-1][pos[1]] == '-':
-        pboard[pos[0]-1][pos[1]] = mboard[pos[0]-1][pos[1]]
-        for row in range(max(0, (pos[0]-1)), min((pos[0]+2), len(mboard))):
-            for column in range(max(0, (pos[1]-1)), min((pos[1]+2), len(mboard))):
-                if mboard[row][column] == '-':
-                    pass
-                    # dig(mboard, pboard, (row, column))
-    else:
-        pboard[pos[0]-1][pos[1]] = mboard[pos[0]-1][pos[1]]
+    pboard[pos[0]-1][pos[1]] = mboard[pos[0]-1][pos[1]]
+    if pboard[pos[0]-1][pos[1]] == '-':
+        for row in range(max(0, (pos[0]-1)), min((pos[0]+2), len(pboard))):
+            for column in range(max(0, (pos[1]-1)), min((pos[1]+2), len(pboard))):
+                if mboard[row][column] == '-' and not pboard[row][column] != '-':
+                    dig(mboard, pboard, (row, column))
+                pboard[row][column] = mboard[row][column]
+                print_board(pboard)
 
 #Default settings
 x = 15
 y = 40
-playing = True
 
 if __name__=='__main__':
     print ("Separate by a space; Default is 15 40")
@@ -119,10 +110,18 @@ if __name__=='__main__':
     masterboard = assign(plant_bombs(new_board(x, '-'), y))
     playerboard = new_board(x, 0)
 
-    while playing:
+    print_board(masterboard)
+
+    while True:
         print ()
         print_board(playerboard)
         print ()
-        dig(masterboard, playerboard, get_pos())
+        position = get_pos()
+        if masterboard[position[0]][position[1]] == '*':
+            print_board(masterboard)
+            print ()
+            print("you lost")
+            break
+        else:
+            dig(masterboard, playerboard, position)
 
-    print_board(masterboard)
