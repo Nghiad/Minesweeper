@@ -2,7 +2,7 @@ from random import randint
 from string import ascii_letters
 
 
-def new_board(size, base):                                              #create blank board
+def new_board(size, base):                                           #create blank board
     board = [[base for column in range(size)] for row in range(size)]
     return board
 
@@ -67,27 +67,38 @@ def print_board(board):                                    #print board in prope
         else:
             print(ascii_letters[alpha], end=" ")                        
 
-def get_pos(playerboard):                                   #checks if input mode or pos
-    command = input("Command: ").strip()
-    if command == 'dig':
-        return 'dig'
-    elif command == 'flag':
-        return 'flag'
-    else:
-        command = command.split()
-        if command[0].isdigit():
-            x = int(command[0])
-            y = int(ascii_letters.index(command[1]))
-        else:
-            y = int(ascii_letters.index(command[0]))
-            x = int(command[1])
+def get_pos(playerboard):
+    while True:                                             #input check for mode or pos
+        command = input("Command: ").strip()
+        if command == 'dig':                                        
+            return 'dig'
+        elif command == 'flag':
+            return 'flag'
+        else:                                            #converts input into coordinate
+            try:
+                x = []
+                for i in (command):
+                    if str(i).isdigit():
+                        x.append(i)
+                    if i in ascii_letters:
+                        y = int(ascii_letters.index(i))
 
-        if (playerboard[x-1][y] == 'F') or (x > len(playerboard)) or (y > len(playerboard)):
-            print ()
-            print ("INVALID INPUT")                            #checks if valid on board
-            return False
-        else:
+                try:
+                    x = int(x[0] + x[1])
+                except:
+                    x = int(x[0])
+
+                if (playerboard[x-1][y] == 'F') or (x > len(playerboard)) or (y > len(playerboard)):
+                    raise ValueError     #raise error if pos is flagged or out of bounds
+
+            except:
+                print ()
+                print ("INVALID INPUT")
+                print ()
+                continue
+                
             return (x-1, y)
+
                                                   #if empty, recursively dig surrounding
                                                   #check if empty from recursive digging
 def dig(pboard, mboard, pos):
@@ -120,7 +131,7 @@ def playing(pboard):                      #lose condition if bomb appears on pla
                 return False
     return True
 
-def setup(size, bombs):                                              #gets input for difficulty
+def setup(size, bombs):                                       #gets input for difficulty
     print ()
     print ("=======================================")
     print ()
