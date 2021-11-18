@@ -185,7 +185,7 @@ if __name__=='__main__':                  #game loops until win or lose conditio
 
     print_board(masterboard)
 
-    if (flagged < y) == False:
+    if flagged < y:
         print()
         print ("YOU WIN!")
 
