@@ -207,4 +207,5 @@ if __name__=='__main__':                  #game loops until win or lose conditio
     print ()
     print ("Bombs flagged:", flagged, "out of", bombs)
     input()
+    
 
