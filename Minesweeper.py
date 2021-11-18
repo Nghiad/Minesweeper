@@ -2,8 +2,8 @@ from random import randint
 from string import ascii_letters
 
 
-def new_board(size, x):                                              #create blank board
-    board = [[x for column in range(size)] for row in range(size)]
+def new_board(size, base):                                              #create blank board
+    board = [[base for column in range(size)] for row in range(size)]
     return board
 
 def plant_bombs(board, numbombs):                              #plant all bombs on board
@@ -120,7 +120,7 @@ def playing(pboard):                      #lose condition if bomb appears on pla
                 return False
     return True
 
-def setup(x, y):                                              #gets input for difficulty
+def setup(size, bombs):                                              #gets input for difficulty
     print ()
     print ("=======================================")
     print ()
@@ -130,41 +130,41 @@ def setup(x, y):                                              #gets input for di
     print ()
     print ()
     print ()
-    print ("Default size: ", x)
-    print ("Default bombs:", y)
+    print ("Default size: ", size)
+    print ("Default bombs:", bombs)
     print ("Maximum size: 50")
     print ()
     print ("To change modes, input 'dig' or 'flag'")
     print ()
-    print ("input format:", x, y)
+    print ("input format:", size, bombs)
     print ()
     while True:
         difficulty = input("Input board size and number of bombs: ").strip()
         if difficulty == '':
-            return (x, y)
+            return (size, bombs)
         try:
             difficulty = difficulty.split()
-            x = int(difficulty[0])
-            y = int(difficulty[1])
+            size = int(difficulty[0])
+            bombs = int(difficulty[1])
             break
         except:
             print ("invalid")
-    return (x, y)
+    return (size, bombs)
 
 
 
 #Default settings
-x = 15
-y = 40
+size = 15
+bombs = 40
 mode = 'DIG'
 flagged = 0
 
 
 if __name__=='__main__':                  #game loops until win or lose condition is met
-    x, y = setup(x, y)
-    masterboard = assign(plant_bombs(new_board(x, '-'), y))
-    playerboard = new_board(x, 0)
-    while playing(playerboard) and flagged < y:
+    size, bombs = setup(size, bombs)
+    masterboard = assign(plant_bombs(new_board(size, '-'), bombs))
+    playerboard = new_board(size, 0)
+    while playing(playerboard) and flagged < bombs:
         print ()
         print_board(playerboard)
         print ()
@@ -185,7 +185,7 @@ if __name__=='__main__':                  #game loops until win or lose conditio
 
     print_board(masterboard)
 
-    if flagged < y:
+    if flagged == bombs:
         print()
         print ("YOU WIN!")
 
