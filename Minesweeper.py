@@ -183,8 +183,6 @@ if __name__=='__main__':                  #game loops until win or lose conditio
             print ("MODE: ", mode)
             print ()
             location = get_pos(playerboard)
-            if location == False:
-                continue
             if location == 'dig':
                 mode = 'DIG'
             elif location == 'flag':
