@@ -88,8 +88,8 @@ def get_pos(playerboard):                                   #checks if input mod
             return False
         else:
             return (x-1, y)
-                                                #if empty, recursively dig surrounding
-                                                #check if empty from recursive digging
+                                                  #if empty, recursively dig surrounding
+                                                  #check if empty from recursive digging
 def dig(pboard, mboard, pos):
     if mboard[pos[0]][pos[1]] == '-' and pboard[pos[0]][pos[1]] != '-':
         pboard[pos[0]][pos[1]] = mboard[pos[0]][pos[1]]
@@ -102,7 +102,7 @@ def dig(pboard, mboard, pos):
                 pboard[row][column] = mboard[row][column]
     pboard[pos[0]][pos[1]] = mboard[pos[0]][pos[1]]
 
-def flag(pboard, mboard, pos, flagged):             #win condition if flag all bombs
+def flag(pboard, mboard, pos, flagged):                 #win condition if flag all bombs
     if pboard[pos[0]][pos[1]] == 'F':
         pboard[pos[0]][pos[1]]= 0
         if mboard[pos[0]][pos[1]] == '*':   
@@ -113,14 +113,14 @@ def flag(pboard, mboard, pos, flagged):             #win condition if flag all b
             flagged +=1
     return flagged
 
-def playing(pboard):                   #lose condition if bomb appears on playerboard
+def playing(pboard):                      #lose condition if bomb appears on playerboard
     for row in range(len(pboard)):
         for column in range(len(pboard)):
             if pboard[row][column] == '*':
                 return False
     return True
 
-def setup(x, y):                                           #gets input for difficulty
+def setup(x, y):                                              #gets input for difficulty
     print ()
     print ("=======================================")
     print ()
@@ -160,7 +160,7 @@ mode = 'DIG'
 flagged = 0
 
 
-if __name__=='__main__':               #game loops until win or lose condition is met
+if __name__=='__main__':                  #game loops until win or lose condition is met
     x, y = setup(x, y)
     masterboard = assign(plant_bombs(new_board(x, '-'), y))
     playerboard = new_board(x, 0)
