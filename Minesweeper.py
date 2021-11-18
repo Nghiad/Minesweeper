@@ -69,31 +69,47 @@ def check(board, pos):
 
 def get_pos():
     try:
-        location = input("which position? ").strip().split()
-        if location[0].isdigit():
-            x = int(location[0])
-            y = int(ascii_letters.index(location[1]))
+        command = input("Change mode or pick next position. ").strip()
+        if command == 'dig' or command == 'DIG' or command == 'Dig':
+            return 'dig'
+        elif command == 'flag' or command =='FLAG' or command == 'Flag':
+            return 'flag'
         else:
-            y = int(ascii_letters.index(location[0]))
-            x = int(location[1])
-        return (x, y)
+            command = command.split()
+            if command[0].isdigit():
+                x = int(command[0])
+                y = int(ascii_letters.index(command[1]))
+            else:
+                y = int(ascii_letters.index(command[0]))
+                x = int(command[1])
+            return (x-1, y)
 
     except:
         return None                                                 #returns coordinates
 
-def dig(mboard, pboard, pos):
-    pboard[pos[0]-1][pos[1]] = mboard[pos[0]-1][pos[1]]
-    if pboard[pos[0]-1][pos[1]] == '-':
+def dig(pboard, mboard, pos):
+    if mboard[pos[0]][pos[1]] == '-' and pboard[pos[0]][pos[1]] != '-':
+        pboard[pos[0]][pos[1]] = mboard[pos[0]][pos[1]]
         for row in range(max(0, (pos[0]-1)), min((pos[0]+2), len(pboard))):
             for column in range(max(0, (pos[1]-1)), min((pos[1]+2), len(pboard))):
-                if mboard[row][column] == '-' and not pboard[row][column] != '-':
-                    dig(mboard, pboard, (row, column))
+                if pboard[row][column] == '-' or (row,column) == pos:
+                    continue
+                elif mboard[row][column] == '-' and pboard[row][column] != '-':
+                    dig(pboard, mboard, (row, column))
                 pboard[row][column] = mboard[row][column]
-                print_board(pboard)
+    pboard[pos[0]][pos[1]] = mboard[pos[0]][pos[1]]
+
+def flag(pboard, pos):
+    if pboard[pos[0]][pos[1]] == 'F':
+        pboard[pos[0]][pos[1]]= 0
+    elif pboard[pos[0]][pos[1]] == 0:
+        pboard[pos[0]][pos[1]]= 'F'
+
 
 #Default settings
 x = 15
 y = 40
+mode = 'DIG'
 
 if __name__=='__main__':
     print ("Separate by a space; Default is 15 40")
@@ -110,18 +126,22 @@ if __name__=='__main__':
     masterboard = assign(plant_bombs(new_board(x, '-'), y))
     playerboard = new_board(x, 0)
 
-    print_board(masterboard)
+    print_board(masterboard)                #FOR TESTING!!!!
 
     while True:
         print ()
         print_board(playerboard)
         print ()
-        position = get_pos()
-        if masterboard[position[0]][position[1]] == '*':
-            print_board(masterboard)
-            print ()
-            print("you lost")
-            break
+        print ("MODE: ", mode)
+        print ()
+        location = get_pos()
+        if location == 'dig':
+            mode = 'DIG'
+        elif location == 'flag':
+            mode = 'FLAG'
         else:
-            dig(masterboard, playerboard, position)
+            if mode == 'DIG':
+                dig(playerboard, masterboard, location)
+            elif mode == 'FLAG':
+                flag(playerboard, location)
 
