@@ -2,11 +2,11 @@ from random import randint
 from string import ascii_letters
 
 
-def new_board(size, x):
+def new_board(size, x):                                              #create blank board
     board = [[x for column in range(size)] for row in range(size)]
     return board
 
-def plant_bombs(board, numbombs):
+def plant_bombs(board, numbombs):                              #plant all bombs on board
     bombs = 0
     while bombs < numbombs:
         x = randint(0, len(board)-1)
@@ -15,15 +15,23 @@ def plant_bombs(board, numbombs):
         bombs += 1
     return board
 
-def assign(board):
-    for row in range(len(board)):
+def check(board, pos):                               #return number of surrounding bombs
+    n = 0
+    for row in range(max(0, (pos[0]-1)), min((pos[0]+2), len(board))):
+        for column in range(max(0, (pos[1]-1)), min((pos[1]+2), len(board))):
+            if board[row][column] == '*':
+                n += 1
+    return n 
+
+def assign(board):                          #call check function and assignment on board
+    for row in range(len(board)):                   
         for column in range(len(board)):
             if board[row][column] == '*' or check(board,(row,column)) == 0:
                 continue
             board[row][column] = check(board,(row,column))
     return board
 
-def print_board(board):
+def print_board(board):                                    #print board in proper format
     print ("     ", end='')
     for alpha in range(len(board)):
         if alpha == (len(board)-1):
@@ -57,15 +65,7 @@ def print_board(board):
         if alpha == (len(board)-1):
             print(ascii_letters[alpha])
         else:
-            print(ascii_letters[alpha], end=" ")
-
-def check(board, pos):
-    n = 0
-    for row in range(max(0, (pos[0]-1)), min((pos[0]+2), len(board))):
-        for column in range(max(0, (pos[1]-1)), min((pos[1]+2), len(board))):
-            if board[row][column] == '*':
-                n += 1
-    return n                         #return number of surrounding bombs
+            print(ascii_letters[alpha], end=" ")                        
 
 def get_pos(playerboard):
     command = input("Command: ").strip()
@@ -102,23 +102,21 @@ def dig(pboard, mboard, pos):
                 pboard[row][column] = mboard[row][column]
     pboard[pos[0]][pos[1]] = mboard[pos[0]][pos[1]]
 
-def flag(pboard, pos):
+def flag(pboard, mboard, pos, flagged):
     if pboard[pos[0]][pos[1]] == 'F':
         pboard[pos[0]][pos[1]]= 0
+        if mboard[pos[0]][pos[1]] == '*':
+            flagged -=1
     elif pboard[pos[0]][pos[1]] == 0:
         pboard[pos[0]][pos[1]]= 'F'
+        if mboard[pos[0]][pos[1]] == '*':
+            flagged +=1
+    return flagged
 
 def playing(pboard):
     for row in range(len(pboard)):
         for column in range(len(pboard)):
             if pboard[row][column] == '*':
-                return False
-    return True
-
-def win(pboard):
-    for row in range(len(pboard)):
-        for column in range(len(pboard)):
-            if pboard[row][column] == 0:
                 return False
     return True
 
@@ -153,21 +151,20 @@ def setup(x, y):
             print ("invalid")
     return (x, y)
 
+
+
 #Default settings
 x = 15
 y = 40
 mode = 'DIG'
+flagged = 0
 
-if __name__=='__main__':
+
+if __name__=='__main__':                            #create masterboard and playerboard
     x, y = setup(x, y)
-
     masterboard = assign(plant_bombs(new_board(x, '-'), y))
     playerboard = new_board(x, 0)
-
-    print ()
-    print_board(masterboard)                #FOR TESTING!!!!
-
-    while playing(playerboard) and not win(playerboard):
+    while playing(playerboard) and flagged < y:
         print ()
         print_board(playerboard)
         print ()
@@ -184,12 +181,12 @@ if __name__=='__main__':
             if mode == 'DIG':
                 dig(playerboard, masterboard, location)
             elif mode == 'FLAG':
-                flag(playerboard, location)
+                flagged = flag(playerboard, masterboard, location, flagged)
 
     print_board(masterboard)
 
-    if win(playerboard):
-        print ()
+    if (flagged < y) == False:
+        print()
         print ("YOU WIN!")
 
     else:
