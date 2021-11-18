@@ -172,40 +172,50 @@ flagged = 0
 
 
 if __name__=='__main__':                  #game loops until win or lose condition is met
-    size, bombs = setup(size, bombs)
-    masterboard = assign(plant_bombs(new_board(size, '-'), bombs))
-    playerboard = new_board(size, 0)
-    while playing(playerboard) and flagged < bombs:
-        print ()
-        print_board(playerboard)
-        print ()
-        print ("MODE: ", mode)
-        print ()
-        location = get_pos(playerboard)
-        if location == False:
-            continue
-        if location == 'dig':
-            mode = 'DIG'
-        elif location == 'flag':
-            mode = 'FLAG'
-        else:
-            if mode == 'DIG':
-                dig(playerboard, masterboard, location)
-            elif mode == 'FLAG':
-                flagged = flag(playerboard, masterboard, location, flagged)
-
-    print_board(masterboard)
-
-    if flagged == bombs:
-        print ()
-        print ("YOU WIN!")
-
-    else:
-        print ()
-        print ("YOU DIED!")
+    while True:
+        size, bombs = setup(size, bombs)
+        masterboard = assign(plant_bombs(new_board(size, '-'), bombs))
+        playerboard = new_board(size, 0)
+        while playing(playerboard) and flagged < bombs:
+            print ()
+            print_board(playerboard)
+            print ()
+            print ("MODE: ", mode)
+            print ()
+            location = get_pos(playerboard)
+            if location == False:
+                continue
+            if location == 'dig':
+                mode = 'DIG'
+            elif location == 'flag':
+                mode = 'FLAG'
+            else:
+                if mode == 'DIG':
+                    dig(playerboard, masterboard, location)
+                elif mode == 'FLAG':
+                    flagged = flag(playerboard, masterboard, location, flagged)
     
-    print ()
-    print ("Bombs flagged:", flagged, "out of", bombs)
-    input()
+        print_board(masterboard)
+    
+        if flagged == bombs:
+            print ()
+            print ("YOU WIN!")
+    
+        else:
+            print ()
+            print ("YOU DIED!")
+        
+        print ()
+        print ("Bombs flagged:", flagged, "out of", bombs)
+        print ()
+        choice = input ("Do you want to play again? (yes/no) ").lower().strip()
+        if choice == 'no':
+            print ()
+            print ("Thank you for playing!")
+            input ()
+            break
+        else:
+            continue
+
     
 
