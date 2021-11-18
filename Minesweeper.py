@@ -197,10 +197,14 @@ if __name__=='__main__':                  #game loops until win or lose conditio
     print_board(masterboard)
 
     if flagged == bombs:
-        print()
+        print ()
         print ("YOU WIN!")
 
     else:
         print ()
         print ("YOU DIED!")
+    
+    print ()
+    print ("Bombs flagged:", flagged, "out of", bombs)
+    input()
 
