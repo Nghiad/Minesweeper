@@ -67,25 +67,28 @@ def check(board, pos):
                 n += 1
     return n                         #return number of surrounding bombs
 
-def get_pos():
-    try:
-        command = input("Change mode or pick next position. ").strip()
-        if command == 'dig' or command == 'DIG' or command == 'Dig':
-            return 'dig'
-        elif command == 'flag' or command =='FLAG' or command == 'Flag':
-            return 'flag'
+def get_pos(playerboard):
+    command = input("Command: ").strip()
+    if command == 'dig':
+        return 'dig'
+    elif command == 'flag':
+        return 'flag'
+    else:
+        command = command.split()
+        if command[0].isdigit():
+            x = int(command[0])
+            y = int(ascii_letters.index(command[1]))
         else:
-            command = command.split()
-            if command[0].isdigit():
-                x = int(command[0])
-                y = int(ascii_letters.index(command[1]))
-            else:
-                y = int(ascii_letters.index(command[0]))
-                x = int(command[1])
-            return (x-1, y)
+            y = int(ascii_letters.index(command[0]))
+            x = int(command[1])
 
-    except:
-        return None                                                 #returns coordinates
+        if (playerboard[x-1][y] == 'F') or (x > len(playerboard)) or (y > len(playerboard)):
+            print ()
+            print ("INVALID INPUT")
+            return False
+        else:
+            return (x-1, y)
+                                               
 
 def dig(pboard, mboard, pos):
     if mboard[pos[0]][pos[1]] == '-' and pboard[pos[0]][pos[1]] != '-':
@@ -105,6 +108,50 @@ def flag(pboard, pos):
     elif pboard[pos[0]][pos[1]] == 0:
         pboard[pos[0]][pos[1]]= 'F'
 
+def playing(pboard):
+    for row in range(len(pboard)):
+        for column in range(len(pboard)):
+            if pboard[row][column] == '*':
+                return False
+    return True
+
+def win(pboard):
+    for row in range(len(pboard)):
+        for column in range(len(pboard)):
+            if pboard[row][column] == 0:
+                return False
+    return True
+
+def setup(x, y):
+    print ()
+    print ("=======================================")
+    print ()
+    print ("             Minesweeper")
+    print ()
+    print ("=======================================")
+    print ()
+    print ()
+    print ()
+    print ("Default size: ", x)
+    print ("Default bombs:", y)
+    print ("Maximum size: 50")
+    print ()
+    print ("To change modes, input 'dig' or 'flag'")
+    print ()
+    print ("input format:", x, y)
+    print ()
+    while True:
+        difficulty = input("Input board size and number of bombs: ").strip()
+        if difficulty == '':
+            return (x, y)
+        try:
+            difficulty = difficulty.split()
+            x = int(difficulty[0])
+            y = int(difficulty[1])
+            break
+        except:
+            print ("invalid")
+    return (x, y)
 
 #Default settings
 x = 15
@@ -112,29 +159,23 @@ y = 40
 mode = 'DIG'
 
 if __name__=='__main__':
-    print ("Separate by a space; Default is 15 40")
-    print ("Maximum size is 50")
-    while True:
-        try:
-            difficulty = input("Input board size and number of bombs: ").split()
-            x = int(difficulty[0])
-            y = int(difficulty[1])
-            break
-        except:
-            print ("invalid")
+    x, y = setup(x, y)
 
     masterboard = assign(plant_bombs(new_board(x, '-'), y))
     playerboard = new_board(x, 0)
 
+    print ()
     print_board(masterboard)                #FOR TESTING!!!!
 
-    while True:
+    while playing(playerboard) and not win(playerboard):
         print ()
         print_board(playerboard)
         print ()
         print ("MODE: ", mode)
         print ()
-        location = get_pos()
+        location = get_pos(playerboard)
+        if location == False:
+            continue
         if location == 'dig':
             mode = 'DIG'
         elif location == 'flag':
@@ -144,4 +185,14 @@ if __name__=='__main__':
                 dig(playerboard, masterboard, location)
             elif mode == 'FLAG':
                 flag(playerboard, location)
+
+    print_board(masterboard)
+
+    if win(playerboard):
+        print ()
+        print ("YOU WIN!")
+
+    else:
+        print ()
+        print ("YOU DIED!")
 
